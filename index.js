@@ -1,5 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const Joi = require('joi');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret'; // Use an environment variable for production
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -28,6 +31,12 @@ const userSchema = new mongoose.Schema({
 // Create a User model
 const User = mongoose.model('User', userSchema);
 
+// Define validation schemas
+const userSchemaJoi = Joi.object({
+    username: Joi.string().min(3).max(30).required(),
+    password: Joi.string().min(6).required()
+});
+
 // Function to save a user
 const saveUser = async (userData) => {
     const user = new User(userData);
@@ -54,6 +63,9 @@ app.get('/', (req, res) => {
 
 // Example route for user registration
 app.post('/register', async (req, res) => {
+    const { error } = userSchemaJoi.validate(req.body);
+    if (error) return res.status(400).send({ message: error.details[0].message });
+
     const { username, password } = req.body;
     try {
         const user = await saveUser({ username, password });
@@ -65,10 +77,15 @@ app.post('/register', async (req, res) => {
 });
 
 // Example route for user login
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
+    const { error } = userSchemaJoi.validate(req.body);
+    if (error) return res.status(400).send({ message: error.details[0].message });
+
     const { username, password } = req.body;
     // Logic for user login (e.g., validate credentials)
-    res.status(200).send({ message: 'User logged in successfully', user: { username } });
+    // For demonstration, assume the user is valid
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).send({ message: 'User logged in successfully', token });
 });
 
 // Example route for adding a new user
@@ -105,6 +122,23 @@ app.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     // Logic to delete user from the database
     res.status(200).send({ message: 'User deleted successfully', userId: id });
+});
+
+// Middleware to protect routes
+const authenticateJWT = (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.sendStatus(403);
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+};
+
+// Example of a protected route
+app.get('/protected', authenticateJWT, (req, res) => {
+    res.send('This is a protected route');
 });
 
 // Start the server
