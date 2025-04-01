@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 min-h-screen font-sans antialiased text-gray-900 overflow-x-hidden;
+  }
+
+  h1 {
+    @apply text-4xl font-bold text-gray-900 mb-4 tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold text-gray-800 mb-3;
+  }
+
+  h3 {
+    @apply text-xl font-medium text-gray-800 mb-2;
+  }
+
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors duration-200;
+  }
+
+  /* Default focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+}
+
+@layer components {
+  /* Layout Components */
+  .container-wrapper {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full;
+  }
+
+  .section {
+    @apply py-12 sm:py-16 w-full;
+  }
+
+  /* Navigation Components */
+  .navbar {
+    @apply fixed top-0 w-full bg-white/80 backdrop-blur-sm shadow-sm z-50 animate-fade-in;
+  }
+
+  .nav-container {
+    @apply container mx-auto px-4 py-4 flex justify-between items-center;
+  }
+
+  .nav-link {
+    @apply text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium
+           transition-all duration-200 relative after:absolute after:bottom-0 after:left-0
+           after:h-0.5 after:w-0 after:bg-primary-600 after:transition-all hover:after:w-full;
+  }
+
+  /* Button Components */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium
+           transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed
+           focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2; /* Use focus-visible for keyboard users */
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700
+           active:bg-primary-800; /* Removed redundant focus ring */
+  }
+
+  .btn-secondary {
+    @apply btn border border-gray-300 bg-white text-gray-700
+           hover:bg-gray-50 active:bg-gray-100; /* Removed redundant focus ring */
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700
+           active:bg-red-800; /* Removed redundant focus ring */
+  }
+
+  /* Card Components */
+  .card {
+    @apply bg-white rounded-xl shadow-sm p-6 transition-all duration-300 ease-in-out /* Slightly slower transition */
+           hover:shadow-md animate-fade-in;
+  }
+
+  .card-hover {
+    @apply hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  /* Form Components */
+  .form-group {
+    @apply space-y-2 mb-4;
+  }
+
+  .input {
+    @apply w-full rounded-lg border-gray-300 shadow-sm
+           focus:border-primary-500 focus:ring-1 focus:ring-primary-500 /* Adjusted focus ring */
+           placeholder:text-gray-400 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed; /* Added disabled state */
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  .error-text {
+    @apply text-sm text-red-600 mt-1;
+  }
+
+  /* Badge Components */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-error {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-800;
+  }
+
+  /* Alert Components */
+  .alert {
+    @apply p-4 rounded-lg border mb-4 animate-fade-in flex items-start; /* Added flex for potential icon alignment */
+  }
+  .alert-icon { @apply mr-3 flex-shrink-0 h-5 w-5; } /* Example for icon styling */
+
+  .alert-success {
+    @apply alert bg-green-50 border-green-200 text-green-800;
+  }
+  .alert-success .alert-icon { @apply text-green-400; }
+
+  .alert-error {
+    @apply alert bg-red-50 border-red-200 text-red-800;
+  }
+  .alert-error .alert-icon { @apply text-red-400; }
+
+  /* Modal Components */
+  .modal-backdrop {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in; /* Slightly darker backdrop */
+  }
+
+  .modal-container {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh]
+           overflow-y-auto animate-slide-up p-6; /* Added default padding */
+  }
+  .modal-header { @apply text-lg font-semibold mb-4; } /* Example modal header */
+  .modal-footer { @apply mt-6 flex justify-end space-x-3; } /* Example modal footer */
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-effect {
+    @apply bg-white/70 backdrop-blur-md;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .grid-auto-fit {
+    @apply grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4;
+  }
+
+  /* Visually hide elements but keep them accessible */
+  .visually-hidden {
+    @apply absolute border-0 w-1 h-1 -m-px p-0 overflow-hidden clip-[rect(0,0,0,0)] whitespace-nowrap break-normal;
+  }
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Enthusiasts - Home</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .animation-delay-200 { animation-delay: 200ms; }
+        .animation-delay-400 { animation-delay: 400ms; }
+        .animation-delay-600 { animation-delay: 600ms; }
+    </style>
+</head>
+<body class="font-sans bg-gradient-to-br from-blue-50 to-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/home.html" class="text-xl font-bold text-gray-800 hover:text-primary-600 transition-colors">Car Enthusiasts</a>
+                <div class="flex items-center space-x-6">
+                    <a href="/store.html" class="text-gray-600 hover:text-gray-900 transition-colors">Store</a>
+                    <a href="/cart.html" class="relative text-gray-600 hover:text-gray-900 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartBadge" class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-primary-600 rounded-full">0</span>
+                    </a>
+                    <button id="logoutButton" class="btn btn-secondary">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <header class="py-24 text-center bg-gradient-to-br from-blue-50 to-gray-100">
+        <div class="container mx-auto px-4">
+            <h1 class="text-5xl font-bold text-gray-900 mb-6 animate-fade-in">Welcome to Car Enthusiasts</h1>
+            <p class="text-xl text-gray-600 mb-12 animate-fade-in animation-delay-200">Your ultimate destination for car news and reviews</p>
+            <div class="flex justify-center gap-4 animate-fade-in animation-delay-400">
+                <a href="/store.html" class="btn btn-primary px-8 py-3">
+                    Browse Store
+                </a>
+                <a href="#latest" class="btn btn-secondary px-8 py-3">
+                    Latest News
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Featured Cars Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Featured Cars</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- McQueen Card -->
+                <div class="card card-hover animate-fade-in animation-delay-200">
+                    <div class="aspect-w-16 aspect-h-9 mb-6 bg-gray-100 rounded-lg"></div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-2">McQueen</h3>
+                    <p class="text-gray-600 mb-6">A lightning-fast sports car with racing heritage. Perfect for speed enthusiasts.</p>
+                    <a href="#" class="btn btn-secondary w-full">View Details</a>
+                </div>
+
+                <!-- Lambo Card -->
+                <div class="card card-hover animate-fade-in animation-delay-400">
+                    <div class="aspect-w-16 aspect-h-9 mb-6 bg-gray-100 rounded-lg"></div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-2">Lambo</h3>
+                    <p class="text-gray-600 mb-6">A premium luxury sports car with sleek design and powerful performance.</p>
+                    <a href="#" class="btn btn-secondary w-full">View Details</a>
+                </div>
+
+                <!-- Divo Card -->
+                <div class="card card-hover animate-fade-in animation-delay-600">
+                    <div class="aspect-w-16 aspect-h-9 mb-6 bg-gray-100 rounded-lg"></div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-2">Divo</h3>
+                    <p class="text-gray-600 mb-6">An exclusive hypercar with limited production and extraordinary performance.</p>
+                    <a href="#" class="btn btn-secondary w-full">View Details</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+            &copy; 2024 Car Enthusiasts. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Authentication check
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login.html';
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+
+        async function updateCartBadge() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const response = await fetch('/api/cart', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                const badge = document.getElementById('cartBadge');
+                if (!badge) return;
+
+                if (response.ok) {
+                    const cart = await response.json();
+                    const totalItems = (cart && Array.isArray(cart.products))
+                        ? cart.products.reduce((sum, item) => sum + (item.quantity || 0), 0)
+                        : 0;
+                    badge.textContent = totalItems;
+                    badge.style.display = totalItems > 0 ? 'inline-flex' : 'none';
+                } else {
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('token');
+                        window.location.href = '/login.html';
+                    }
+                    badge.style.display = 'none';
+                    console.error('Failed to fetch cart badge:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error updating cart badge:', error);
+                const badge = document.getElementById('cartBadge');
+                if (badge) badge.style.display = 'none';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+    </script>
+</body>
+</html>

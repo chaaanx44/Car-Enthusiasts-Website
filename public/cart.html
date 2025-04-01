@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="font-sans bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/home.html" class="text-xl font-bold text-gray-800 hover:text-primary-600 transition-colors">Car Enthusiasts</a>
+                <div class="flex items-center space-x-6">
+                    <a href="/store.html" class="text-gray-600 hover:text-gray-900 transition-colors">Store</a>
+                    <a href="/cart.html" class="relative text-gray-600 hover:text-gray-900 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartBadge" class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-primary-600 rounded-full">0</span>
+                    </a>
+                    <button id="logoutButton" class="btn btn-secondary">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Section -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Your Shopping Cart</h1>
+                <p id="cartTotal" class="text-xl font-semibold text-gray-700">Total: <span class="text-primary-600">₱0.00</span></p>
+            </div>
+            
+            <div id="cartItems" class="space-y-6">
+                <!-- Cart items will be dynamically loaded here -->
+                <!-- Example Cart Item Structure (for reference by cart.js) -->
+                <!-- 
+                <div class="cart-item flex flex-col md:flex-row items-center border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                    <img src="placeholder.jpg" alt="Product Image" class="w-24 h-24 object-cover rounded-md mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                    <div class="flex-grow text-center md:text-left">
+                        <h3 class="text-lg font-semibold text-gray-800">Product Name</h3>
+                        <p class="text-gray-600">Price: ₱100.00</p>
+                        <p class="text-sm text-gray-500">Quantity: 1</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 md:ml-6">
+                        <button class="btn btn-danger btn-sm px-3 py-1" onclick="removeFromCart('product-id')">
+                            <i class="fas fa-trash-alt mr-1"></i> Remove
+                        </button>
+                    </div>
+                </div> 
+                -->
+            </div>
+            
+            <div id="emptyCartMessage" class="text-center py-16 hidden">
+                <i class="fas fa-shopping-cart text-5xl text-gray-400 mb-4"></i>
+                <p class="text-xl text-gray-600 mb-6">Your cart is currently empty.</p>
+                <a href="/store.html" class="btn btn-primary">
+                    <i class="fas fa-store mr-2"></i> Continue Shopping
+                </a>
+            </div>
+
+            <div id="checkoutArea" class="mt-8 pt-6 border-t border-gray-200 justify-end hidden">
+                <button id="checkoutButton" class="btn btn-primary text-lg font-semibold px-8 py-3">
+                    <i class="fas fa-credit-card mr-2"></i> Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8 mt-auto">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+            &copy; 2024 Car Enthusiasts. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="/js/cart.js"></script>
+    <script>
+        // Authentication check
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login.html';
+        }
+
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+
+        // Cart badge update function (ensure it's robust)
+        async function updateCartBadge() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const response = await fetch('/api/cart', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                const badge = document.getElementById('cartBadge');
+                if (!badge) return;
+
+                if (response.ok) {
+                    const cart = await response.json();
+                    const totalItems = (cart && Array.isArray(cart.products))
+                        ? cart.products.reduce((sum, item) => sum + (item.quantity || 0), 0)
+                        : 0;
+                    badge.textContent = totalItems;
+                    badge.style.display = totalItems > 0 ? 'inline-flex' : 'none';
+                } else {
+                    badge.textContent = '0';
+                    badge.style.display = 'none';
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('token');
+                        // window.location.href = '/login.html'; 
+                    }
+                    console.error('Failed to fetch cart badge:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error updating cart badge:', error);
+                 const badge = document.getElementById('cartBadge');
+                if (badge) {
+                     badge.textContent = '0';
+                     badge.style.display = 'none';
+                }
+            }
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+            // cart.js should handle calling the main loadCart function
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="font-sans bg-gradient-to-br from-primary-700 to-primary-900 min-h-screen flex items-center justify-center p-4">
+    <div class="card max-w-md w-full animate-slide-up p-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Create Account</h1>
+        <p class="text-gray-600 text-center mb-6">Join us and start your journey</p>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="username" class="label">Username</label>
+                <input type="text" id="username" name="username" class="input" placeholder="Choose a username (3-30 chars)" required minlength="3" maxlength="30" pattern="^[a-zA-Z0-9_]+$">
+                <!-- Add specific validation messages if needed -->
+            </div>
+            <div class="form-group">
+                <label for="password" class="label">Password</label>
+                <input type="password" id="password" name="password" class="input" placeholder="Choose a password (min 6 chars)" required minlength="6">
+                <!-- Add specific validation messages if needed -->
+            </div>
+            <div id="errorMessage" class="alert alert-error mb-4" style="display: none;"></div>
+            <button type="submit" class="btn btn-primary w-full text-lg py-2.5">
+                 <span class="button-text"><i class="fas fa-user-plus mr-2"></i> Register</span>
+                <span class="button-loading" style="display: none;"><i class="fas fa-spinner fa-spin mr-2"></i> Registering...</span>
+            </button>
+        </form>
+        <p class="text-center text-gray-600 mt-6">Already have an account? <a href="/login.html" class="font-medium hover:underline">Login here</a></p>
+    </div>
+
+    <script src="/js/register.js"></script>
+    <script>
+      // Enhance button loading state directly here
+      const registerForm = document.getElementById('registerForm');
+      const submitButton = registerForm.querySelector('button[type="submit"]');
+      const buttonText = submitButton.querySelector('.button-text');
+      const buttonLoading = submitButton.querySelector('.button-loading');
+
+      registerForm.addEventListener('submit', () => {
+          // Client-side validation check (basic)
+          if (!registerForm.checkValidity()) {
+              return; // Prevent loading state if form is invalid
+          }
+          buttonText.style.display = 'none';
+          buttonLoading.style.display = 'inline-flex';
+          submitButton.disabled = true;
+      });
+      
+      // register.js should handle reverting button state in success/error/finally blocks
+    </script>
+</body>
+</html>

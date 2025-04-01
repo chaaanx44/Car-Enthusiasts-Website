@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Store</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="font-sans bg-gray-100">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="flex items-center space-x-4">
+                <a href="/home.html" class="text-xl font-bold text-white hover:text-primary-300 transition-colors">Car Enthusiasts</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/store.html" class="nav-link text-white hover:text-primary-300">Store</a>
+                <a href="/cart.html" class="relative text-white hover:text-primary-300 transition-colors">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cartBadge" class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">0</span>
+                </a>
+                <button id="logoutButton" class="btn btn-secondary bg-transparent text-white border-white hover:bg-white hover:text-primary-700 py-1 px-3">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="section bg-gradient-to-b from-gray-800 to-gray-900 text-white text-center">
+        <div class="container-wrapper">
+            <h2 class="text-4xl font-bold mb-4 animate-fade-in"></h2>
+            <p class="text-xl text-gray-300 animate-fade-in animation-delay-200">Find the perfect car for your needs</p>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="container-wrapper">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Featured Cars</h2>
+            <div id="productContainer" class="grid-auto-fit gap-8">
+                <!-- Products will be loaded dynamically by store.js -->
+                <!-- The structure below should match what store.js generates -->
+                <!-- 
+                <div class="card card-hover flex flex-col overflow-hidden">
+                    <img src="placeholder.jpg" alt="Product Name" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-lg font-semibold text-primary-700 mb-2">Product Name</h3>
+                        <p class="text-sm text-gray-600 mb-4 flex-grow">Product description snippet.</p>
+                        <p class="text-xl font-bold text-gray-800 mb-4">₱PRICE</p>
+                        <div class="mt-auto flex space-x-2">
+                            <button class="btn btn-secondary flex-1 text-sm" onclick="contactSeller('PRODUCT_ID')">Contact Us</button>
+                            <button class="btn btn-primary flex-1 text-sm" onclick="addToCart('PRODUCT_ID')">
+                                <i class="fas fa-cart-plus mr-1"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div> 
+                -->
+            </div>
+        </div>
+    </section>
+
+    <footer class="section bg-gray-800 text-gray-400 text-center text-sm mt-16">
+        <div class="container-wrapper">
+            &copy; 2024 Car Enthusiasts. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="/js/store.js"></script>
+    <script>
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login.html';
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+
+        async function updateCartBadge() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const response = await fetch('/api/cart', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                const badge = document.getElementById('cartBadge');
+                if (!badge) return;
+
+                if (response.ok) {
+                    const cart = await response.json();
+                    const totalItems = (cart && Array.isArray(cart.products))
+                        ? cart.products.reduce((sum, item) => sum + (item.quantity || 0), 0)
+                        : 0;
+                    badge.textContent = totalItems;
+                    badge.style.display = totalItems > 0 ? 'inline-flex' : 'none';
+                } else {
+                    badge.textContent = '0';
+                    badge.style.display = 'none';
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('token');
+                    }
+                    console.error('Failed to fetch cart:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error updating cart badge:', error);
+                const badge = document.getElementById('cartBadge');
+                if (badge) {
+                     badge.textContent = '0';
+                     badge.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+    </script>
+    <style>
+        .animation-delay-200 { animation-delay: 200ms; }
+    </style>
+</body>
+</html>

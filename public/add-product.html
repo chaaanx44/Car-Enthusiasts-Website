@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="font-sans bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="card max-w-md w-full animate-slide-up p-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Add New Product</h1>
+        <form id="addProductForm">
+            <div class="form-group">
+                <label for="name" class="label">Product Name</label>
+                <input type="text" id="name" name="name" class="input" placeholder="Enter product name" required>
+            </div>
+            <div class="form-group">
+                <label for="price" class="label">Price</label>
+                <input type="number" id="price" name="price" class="input" placeholder="Enter product price" required min="0">
+            </div>
+            <div class="form-group">
+                <label for="image" class="label">Image URL</label>
+                <input type="url" id="image" name="image" class="input" placeholder="Enter image URL">
+            </div>
+            <div class="form-group">
+                <label for="description" class="label">Description</label>
+                <textarea id="description" name="description" class="input" placeholder="Enter product description" rows="4"></textarea>
+            </div>
+            <div id="errorMessage" class="alert alert-error mb-4 hidden"></div>
+            <button type="submit" class="btn btn-primary w-full text-lg py-2.5">
+                <span class="button-text"><i class="fas fa-plus mr-2"></i> Add Product</span>
+                <span class="button-loading hidden"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
+        </form>
+    </div>
+
+    <script src="/js/add-product.js"></script>
+    <script>
+        // Redirect to login if not authenticated
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card {
+    @apply bg-white rounded-lg shadow-lg p-6;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:shadow-xl hover:-translate-y-0.5;
+  }
+  
+  .form-group {
+    @apply mb-4 relative;
+  }
+  
+  .label {
+    @apply block mb-2 text-sm font-medium text-gray-600;
+    @apply transition-colors duration-200;
+  }
+  
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+    @apply appearance-none transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply placeholder:text-gray-400;
+    @apply disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed;
+  }
+
+  .input-error {
+    @apply border-red-300 focus:ring-red-500;
+  }
+  
+  .error-text {
+    @apply mt-1.5 text-sm text-red-600 animate-fade-in;
+  }
+  
+  .alert {
+    @apply p-4 rounded-lg mb-4 flex items-start;
+    @apply animate-fade-in;
+  }
+
+  .alert-error {
+    @apply bg-red-50 text-red-700 text-sm border border-red-200;
+    @apply flex items-center gap-2;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium;
+    @apply transition-all duration-200 ease-out;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white;
+    @apply hover:bg-primary-700 active:bg-primary-800;
+    @apply disabled:hover:bg-primary-600;
+  }
+
+  .btn-loading {
+    @apply relative text-transparent;
+  }
+
+  .btn-loading::after {
+    @apply absolute inset-0 flex items-center justify-center text-white;
+    content: '';
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'%3E%3C/path%3E%3C/svg%3E");
+    animation: spin 1s linear infinite;
+  }
+}
